@@ -10,6 +10,10 @@ import AdminLayout from './components/admin/AdminLayout';
 import AdminProducts from './pages/admin/products/AdminProducts';
 import CreateProduct from './pages/admin/products/CreateProducts';
 import EditProduct from './pages/admin/products/EditProduct';
+import Dashboard from './pages/admin/Dashboard';
+import Variants from './pages/admin/products/Variants';
+import AdminUsers from './pages/admin/users/AdminUsers';
+import CategoryPage from './pages/admin/category/CategoryPage';
 
 const router = createBrowserRouter([
   {
@@ -31,13 +35,15 @@ const router = createBrowserRouter([
       </AdminRoute>
     ),
     children: [
-      // { path: 'dashboard', element: <Dashboard /> },
+      { path: '', element: <Dashboard /> },
       { path: 'products', element: <AdminProducts /> },
       { path: 'products/create', element: <CreateProduct /> },
-      { path: 'products/edit', element: <EditProduct /> },
+      { path: 'products/:id/edit', element: <EditProduct /> },
+      { path: 'products/:id/variants', element: <Variants /> },
+      { path: 'categories', element: <CategoryPage /> },
+      { path: 'users', element: <AdminUsers /> },
 
       // { path: 'orders', element: <AdminOrders /> },
-      // { path: 'users', element: <AdminUsers /> },
     ],
   },
 ]);

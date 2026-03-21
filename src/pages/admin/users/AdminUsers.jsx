@@ -11,47 +11,40 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-function AdminProducts() {
-  const { isLoading, products, error, totalPages, currentPage } = useSelector(
-    (state) => state.products,
-  );
+function AdminUsers() {
+  //   const { isLoading, products, error, totalPages, currentPage } = useSelector(
+  //     (state) => state.products,
+  //   );
 
-  const dispatch = useDispatch();
+  //   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchProducts(currentPage));
-  }, [currentPage, dispatch]);
+  //   useEffect(() => {
+  //     dispatch(fetchProducts(currentPage));
+  //   }, [currentPage, dispatch]);
 
-  const handlePageChange = (page) => {
-    dispatch(productsActions.setPage(page));
-  };
+  //   const handlePageChange = (page) => {
+  //     dispatch(productsActions.setPage(page));
+  //   };
 
-  if (isLoading) {
-    return (
-      <div className='h-screen flex items-center justify-center'>
-        <Spinner className='size-16' />
-      </div>
-    );
-  }
+  //   if (isLoading) {
+  //     return <div>Loading....</div>;
+  //   }
 
-  if (error) {
-    return <div>Error....</div>;
-  }
+  //   if (error) {
+  //     return <div>Error....</div>;
+  //   }
 
   return (
     <div className='bg-white p-6 rounded-xl shadow-sm border'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold mb-6 text-gray-800'>Products</h1>
-        <Link to='/admin/products/create'>
-          <Button size='lg' className='mb-6 bg-blue-600 cursor-pointer'>
-            <Plus />
-            <span>Add Product</span>
-          </Button>
-        </Link>
+        <Button size='lg' className='mb-6 bg-blue-600 cursor-pointer'>
+          <Plus />
+          <span>Add Product</span>
+        </Button>
       </div>
       <div className='rounded-lg border overflow-hidden'>
         <Table>
@@ -78,7 +71,7 @@ function AdminProducts() {
               <TableHead className='font-semibold text-gray-700'></TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          {/* <TableBody>
             {products.map((product) => (
               <TableRow
                 key={product._id}
@@ -102,11 +95,9 @@ function AdminProducts() {
                   ⭐ {product.rating}
                 </TableCell>
                 <TableCell>
-                  <Link to={`/admin/products/${product._id}/edit`}>
-                    <Button variant='link' className='cursor-pointer'>
-                      <Pencil />
-                    </Button>
-                  </Link>
+                  <Button variant='link' className='cursor-pointer'>
+                    <Pencil />
+                  </Button>
                   <Button className='ml-2 cursor-pointer' variant='link'>
                     <Trash2 />
                   </Button>
@@ -118,11 +109,11 @@ function AdminProducts() {
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
+          </TableBody> */}
         </Table>
       </div>
     </div>
   );
 }
 
-export default AdminProducts;
+export default AdminUsers;
