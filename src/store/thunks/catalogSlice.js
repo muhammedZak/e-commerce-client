@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { data } from 'react-router-dom';
 
 export const fetchCatelog = createAsyncThunk(
   'catalog/fetch',
@@ -9,8 +10,10 @@ export const fetchCatelog = createAsyncThunk(
         withCredentials: true,
       });
       return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message);
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
     }
   },
 );
@@ -27,8 +30,46 @@ export const createSport = createAsyncThunk(
         },
       );
       return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || err.message);
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
+    }
+  },
+);
+
+export const updateSport = createAsyncThunk(
+  'catalog/updateSport',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:5000/api/v1/sports/${id}`,
+        data,
+        {
+          withCredentials: true,
+        },
+      );
+      return res.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
+    }
+  },
+);
+
+export const deleteSport = createAsyncThunk(
+  'catalog/deleteSport',
+  async (id, { rejectWithValue }) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/v1/sports/${id}`, {
+        withCredentials: true,
+      });
+      return id;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
     }
   },
 );
@@ -45,26 +86,10 @@ export const createCategory = createAsyncThunk(
         },
       );
       return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message);
-    }
-  },
-);
-
-export const createSubCategory = createAsyncThunk(
-  'catalog/createSubCategory',
-  async (data, { rejectWithValue }) => {
-    try {
-      const res = await axios.post(
-        'http://localhost:5000/api/v1/subcategories',
-        data,
-        {
-          withCredentials: true,
-        },
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
       );
-      return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message);
     }
   },
 );
@@ -81,8 +106,10 @@ export const updateCategory = createAsyncThunk(
         },
       );
       return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
     }
   },
 );
@@ -95,8 +122,66 @@ export const deleteCategory = createAsyncThunk(
         withCredentials: true,
       });
       return id;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
+    }
+  },
+);
+
+export const createSubCategory = createAsyncThunk(
+  'catalog/createSubCategory',
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        'http://localhost:5000/api/v1/subcategories',
+        data,
+        {
+          withCredentials: true,
+        },
+      );
+      return res.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
+    }
+  },
+);
+
+export const updateSubcategory = createAsyncThunk(
+  'catalog/updateSubcategory',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:5000/api/v1/subCategories/${id}`,
+        data,
+        {
+          withCredentials: true,
+        },
+      );
+      return res.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
+    }
+  },
+);
+
+export const deleteSubcategory = createAsyncThunk(
+  'catalog/deleteSubcategory',
+  async (id, { rejectWithValue }) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/v1/subCategories/${id}`, {
+        withCredentials: true,
+      });
+      return id;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
     }
   },
 );

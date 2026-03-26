@@ -6,12 +6,16 @@ import {
   deleteCategory,
   fetchCatelog,
   updateCategory,
+  updateSport,
+  deleteSport,
+  updateSubcategory,
+  deleteSubcategory,
 } from '../thunks/catalogSlice.js';
 
 const initialState = {
   sports: [],
   categories: [],
-  subCategories: [],
+  subcategories: [],
   isLoading: false,
   error: null,
 };
@@ -34,7 +38,7 @@ const catalogSlice = createSlice({
         state.isLoading = false;
         state.sports = action.payload.sports;
         state.categories = action.payload.categories;
-        state.subCategories = action.payload.subCategories;
+        state.subcategories = action.payload.subCategories;
       })
       .addCase(fetchCatelog.rejected, (state, action) => {
         state.isLoading = false;
@@ -47,19 +51,23 @@ const catalogSlice = createSlice({
       .addCase(createSport.fulfilled, (state, action) => {
         state.sports.push(action.payload);
       })
+      .addCase(updateSport.fulfilled, (state, action) => {
+        const index = state.sports.findIndex(
+          (s) => s._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.sports[index] = action.payload;
+        }
+      })
+      .addCase(deleteSport.fulfilled, (state, action) => {
+        state.sports = state.sports.filter((s) => s._id !== action.payload);
+      })
 
       // =========================
       // ✅ CREATE CATEGORY
       // =========================
       .addCase(createCategory.fulfilled, (state, action) => {
         state.categories.push(action.payload);
-      })
-
-      // =========================
-      // ✅ CREATE SUBCATEGORY
-      // =========================
-      .addCase(createSubCategory.fulfilled, (state, action) => {
-        state.subCategories.push(action.payload);
       })
       .addCase(updateCategory.fulfilled, (state, action) => {
         const index = state.categories.findIndex(
@@ -76,15 +84,39 @@ const catalogSlice = createSlice({
       })
 
       // =========================
+      // ✅ CREATE SUBCATEGORY
+      // =========================
+      .addCase(createSubCategory.fulfilled, (state, action) => {
+        state.subcategories.push(action.payload);
+      })
+      .addCase(updateSubcategory.fulfilled, (state, action) => {
+        const index = state.subCategories.findIndex(
+          (sub) => sub._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.subcategories[index] = action.payload;
+        }
+      })
+      .addCase(deleteSubcategory.fulfilled, (state, action) => {
+        state.subcategories = state.subCategories.filter(
+          (sub) => sub._id !== action.payload,
+        );
+      })
+
+      // =========================
       // 🔄 GLOBAL PENDING (ALL CREATE)
       // =========================
       .addMatcher(
         isAnyOf(
           createSport.pending,
+          updateSport.pending,
+          deleteSport.pending,
           createCategory.pending,
           createSubCategory.pending,
           updateCategory.pending,
           deleteCategory.pending,
+          updateSubcategory.pending,
+          deleteSubcategory.pending,
         ),
         (state) => {
           state.isLoading = true;
@@ -98,10 +130,14 @@ const catalogSlice = createSlice({
       .addMatcher(
         isAnyOf(
           createSport.rejected,
+          updateSport.rejected,
+          deleteSport.rejected,
           createCategory.rejected,
-          createSubCategory.rejected,
           updateCategory.rejected,
           deleteCategory.rejected,
+          createSubCategory.rejected,
+          updateSubcategory.rejected,
+          deleteSubcategory.rejected,
         ),
         (state, action) => {
           state.isLoading = false;
@@ -115,10 +151,14 @@ const catalogSlice = createSlice({
       .addMatcher(
         isAnyOf(
           createSport.fulfilled,
+          updateSport.fulfilled,
+          deleteSport.fulfilled,
           createCategory.fulfilled,
-          createSubCategory.fulfilled,
           updateCategory.fulfilled,
           deleteCategory.fulfilled,
+          createSubCategory.fulfilled,
+          updateSubcategory.fulfilled,
+          deleteSubcategory.fulfilled,
         ),
         (state) => {
           state.isLoading = false;
