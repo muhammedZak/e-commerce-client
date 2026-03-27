@@ -90,7 +90,7 @@ const catalogSlice = createSlice({
         state.subcategories.push(action.payload);
       })
       .addCase(updateSubcategory.fulfilled, (state, action) => {
-        const index = state.subCategories.findIndex(
+        const index = state.subcategories.findIndex(
           (sub) => sub._id === action.payload._id,
         );
         if (index !== -1) {
@@ -98,7 +98,7 @@ const catalogSlice = createSlice({
         }
       })
       .addCase(deleteSubcategory.fulfilled, (state, action) => {
-        state.subcategories = state.subCategories.filter(
+        state.subcategories = state.subcategories.filter(
           (sub) => sub._id !== action.payload,
         );
       })

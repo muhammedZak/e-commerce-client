@@ -15,7 +15,7 @@ function SelectField({ name, control, label, options, placeholder, disable }) {
     <FormField name={name} control={control} label={label}>
       {(field, state) => (
         <Select
-          value={field.value}
+          value={field.value || ''}
           onValueChange={field.onChange}
           disabled={disable}>
           <SelectTrigger

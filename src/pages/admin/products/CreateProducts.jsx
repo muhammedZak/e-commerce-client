@@ -52,7 +52,7 @@ function CreateProduct() {
   });
 
   const { isLoading, error } = useSelector((state) => state.products);
-  const { sports, categories, subCategories } = useSelector(
+  const { sports, categories, subcategories } = useSelector(
     (state) => state.catalog,
   );
 
@@ -74,7 +74,7 @@ function CreateProduct() {
 
   const selectedCategory = form.watch('category');
 
-  const filteredSubCategories = subCategories.filter(
+  const filteredSubCategories = subcategories.filter(
     (sc) => sc.category === selectedCategory,
   );
 
