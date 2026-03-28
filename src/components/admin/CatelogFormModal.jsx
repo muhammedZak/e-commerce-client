@@ -4,18 +4,47 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 
-function CatelogFormModal({ open, setOpen, title, children }) {
+function CatelogFormModal({
+  open,
+  setOpen,
+  title,
+  form,
+  onSubmit,
+  editingItem,
+  setEditingItem,
+  setModalType,
+  children,
+}) {
+  const handleOpenChange = (val) => {
+    setOpen(val);
+
+    if (!val) {
+      form?.reset({
+        name: '',
+        sport: '',
+        category: '',
+      });
+
+      setEditingItem?.(null);
+      setModalType?.(null);
+    }
+  };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>Update your sport details below</DialogDescription>
+          <DialogTitle>
+            {editingItem ? 'Edit' : 'Add'} {title}
+          </DialogTitle>
+          <DialogDescription>
+            Update your {title} details below
+          </DialogDescription>
         </DialogHeader>
-        {children}
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+          {children}
+        </form>
       </DialogContent>
     </Dialog>
   );

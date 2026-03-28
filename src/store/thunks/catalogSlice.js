@@ -61,8 +61,6 @@ export const updateSport = createAsyncThunk(
 export const deleteSport = createAsyncThunk(
   'catalog/deleteSport',
   async (id, { rejectWithValue }) => {
-    console.log(typeof id);
-    console.log(id);
     try {
       await axios.delete(`http://localhost:5000/api/v1/sports/${id}`, {
         withCredentials: true,
