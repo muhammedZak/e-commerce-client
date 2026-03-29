@@ -1,26 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 
 import { Search, Plus } from 'lucide-react';
 
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import { DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-import SelectField from '@/components/form/SelectField';
-import FormField from '@/components/form/FormField';
+import { Spinner } from '@/components/ui/spinner';
 
 import AlertModal from '@/components/admin/AlertModal';
-import CatelogFormModal from '@/components/admin/CatelogFormModal';
+import FormModal from '@/components/FormModal';
+import CatalogForm from '@/components/admin/CatalogForm';
 
 import { fetchCatelog } from '@/store/thunks/catalogSlice';
 import CatalogCard from '@/components/admin/catalog/CatalogCard';
@@ -31,7 +25,7 @@ import { useCatalogForm } from '@/customHooks/useCatalogForm';
 function CategoryPage() {
   const dispatch = useDispatch();
 
-  const { sports, categories, subcategories, isLoading } = useSelector(
+  const { sports, categories, subcategories, isLoading, error } = useSelector(
     (state) => state.catalog,
   );
 
@@ -98,9 +92,17 @@ function CategoryPage() {
 
   const catelog = ['sports', 'categories', 'subcategories'];
 
+  if (isLoading) {
+    return (
+      <div className='h-screen flex items-center justify-center'>
+        <Spinner className='size-16' />
+      </div>
+    );
+  }
+
   return (
     <>
-      <CatelogFormModal
+      <FormModal
         open={isOpen}
         setOpen={setIsOpen}
         title={modalType}
@@ -109,46 +111,14 @@ function CategoryPage() {
         editingItem={editingItem}
         setEditingItem={setEditingItem}
         setModalType={setModalType}>
-        <FormField name='name' control={form.control} label='Name'>
-          {(field, state) => (
-            <Input
-              {...field}
-              value={field.value || ''}
-              aria-invalid={state.invalid}
-              placeholder='Enter name'
-            />
-          )}
-        </FormField>
-
-        {modalType === 'category' && (
-          <SelectField
-            name='sport'
-            control={form.control}
-            label='Sport'
-            placeholder='Select sport'
-            options={sports.map((s) => ({
-              label: s.name,
-              value: s._id,
-            }))}
-          />
-        )}
-
-        {modalType === 'subcategory' && (
-          <SelectField
-            name='category'
-            control={form.control}
-            label='Category'
-            placeholder='Select category'
-            options={categories.map((c) => ({
-              label: c.name,
-              value: c._id,
-            }))}
-          />
-        )}
-        <DialogFooter>
-          <Button type='submit'>{editingItem ? 'Update' : 'Create'}</Button>
-        </DialogFooter>
-      </CatelogFormModal>
+        <CatalogForm
+          form={form}
+          categories={categories}
+          sports={sports}
+          editingItem={editingItem}
+          modalType={modalType}
+        />
+      </FormModal>
       <AlertModal
         open={isAlertOpen}
         onOpenChange={onAlertChange}

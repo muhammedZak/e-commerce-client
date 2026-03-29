@@ -24,7 +24,7 @@ function Variants() {
 
   useEffect(() => {
     dispatch(fetchVariants(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   const handlePageChange = (page) => {
     dispatch(variantsActions.setPage(page));

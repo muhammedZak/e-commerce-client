@@ -69,7 +69,6 @@ const useCatalogActions = ({ form, setIsOpen, setEditingItem }) => {
         }
       }
     } catch (err) {
-      console.log(err);
       handleError(err);
     }
   };
