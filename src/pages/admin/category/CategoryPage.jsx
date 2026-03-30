@@ -90,6 +90,17 @@ function CategoryPage() {
     handleDelete(modalType, editingItem);
   };
 
+  const closeModal = () => {
+    setIsOpen(false);
+    resetForm();
+    setEditingItem(null);
+    setModalType(null);
+  };
+
+  const handleModalChange = (val) => {
+    if (!val) closeModal();
+  };
+
   const catelog = ['sports', 'categories', 'subcategories'];
 
   if (isLoading) {
@@ -102,21 +113,14 @@ function CategoryPage() {
 
   return (
     <>
-      <FormModal
-        open={isOpen}
-        setOpen={setIsOpen}
-        title={modalType}
-        form={form}
-        onSubmit={onSubmit}
-        editingItem={editingItem}
-        setEditingItem={setEditingItem}
-        setModalType={setModalType}>
+      <FormModal open={isOpen} onOpenChange={handleModalChange}>
         <CatalogForm
           form={form}
           categories={categories}
           sports={sports}
           editingItem={editingItem}
           modalType={modalType}
+          onSubmit={onSubmit}
         />
       </FormModal>
       <AlertModal
