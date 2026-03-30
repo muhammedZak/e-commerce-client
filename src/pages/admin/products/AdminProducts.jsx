@@ -17,6 +17,18 @@ import { Link } from 'react-router-dom';
 import FormModal from '@/components/FormModal';
 import { useVariantForm } from '@/customHooks/useVariantForm';
 import VariantForm from '@/components/admin/variant/VariantForm';
+import CustomTableHead from '@/components/admin/CustomTableHead';
+import ProductTableBody from '@/components/admin/ProductTableBody';
+
+const columns = [
+  { key: 'name', label: 'Product Name' },
+  { key: 'price', label: 'Price' },
+  { key: 'stock', label: 'Stock' },
+  { key: 'sport', label: 'Sport' },
+  { key: 'rating', label: 'Ratings' },
+  { key: 'actions', label: 'Actions' },
+  { key: 'defualt', label: '' },
+];
 
 function AdminProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,18 +62,29 @@ function AdminProducts() {
   }
 
   const onSubmit = (data) => {
-    console.log('HI');
+    
+  };
+
+  const modalOpen = (item = null) => {
+    setIsModalOpen(true);
+    if (item) {
+      resetForm(item);
+    }
+  };
+
+  const closeModal = () => {
+    resetForm();
+    setIsModalOpen(false);
+  };
+
+  const handleModalChange = (val) => {
+    if (!val) closeModal();
   };
 
   return (
     <>
-      <FormModal
-        open={isModalOpen}
-        setOpen={setIsModalOpen}
-        title='variant'
-        form={form}
-        onSubmit={onSubmit}>
-        <VariantForm form={form} />
+      <FormModal open={isModalOpen} onOpenChange={handleModalChange}>
+        <VariantForm form={form} onSubmit={onSubmit} />
       </FormModal>
       <div className='bg-white p-6 rounded-xl shadow-sm border'>
         <div className='flex items-center justify-between'>
@@ -75,77 +98,12 @@ function AdminProducts() {
         </div>
         <div className='rounded-lg border overflow-hidden'>
           <Table>
-            <TableHeader className='bg-gray-100'>
-              <TableRow>
-                <TableHead className='font-semibold text-gray-700'>
-                  Product Name
-                </TableHead>
-                <TableHead className='font-semibold text-gray-700'>
-                  Price
-                </TableHead>
-                <TableHead className='font-semibold text-gray-700'>
-                  Stock
-                </TableHead>
-                <TableHead className='font-semibold text-gray-700'>
-                  Sport
-                </TableHead>
-                <TableHead className='font-semibold text-gray-700'>
-                  Rating
-                </TableHead>
-                <TableHead className='font-semibold text-gray-700'>
-                  Action
-                </TableHead>
-                <TableHead className='font-semibold text-gray-700'></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow
-                  key={product._id}
-                  className='hover:bg-gray-50 transition'>
-                  <TableCell className='font-medium text-gray-800'>
-                    {product.name}
-                  </TableCell>
-                  <TableCell className='font-medium text-gray-800'>
-                    {product.minPrice}
-                  </TableCell>
-                  <TableCell
-                    className={`font-medium ${
-                      product.stock > 10 ? 'text-green-600' : 'text-red-500'
-                    }`}>
-                    {product.stock ? product.stock : 'Out of stock'}
-                  </TableCell>
-                  <TableCell className='text-gray-700'>
-                    {product.sport.name}
-                  </TableCell>
-                  <TableCell className='text-yellow-500 font-medium'>
-                    ⭐ {product.rating}
-                  </TableCell>
-                  <TableCell>
-                    <Link to={`/admin/products/${product._id}/edit`}>
-                      <Button variant='link' className='cursor-pointer'>
-                        <Pencil />
-                      </Button>
-                    </Link>
-                    <Button className='ml-2 cursor-pointer' variant='link'>
-                      <Trash2 />
-                    </Button>
-                    <Button
-                      onClick={() => setIsModalOpen(true)}
-                      className='ml-2 cursor-pointer hover:bg-blue-600 hover:text-white'
-                      variant='outline'>
-                      <Plus />
-                      <span>Add variant</span>
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <Link to={`/admin/products/${product._id}/variants`}>
-                      <span className='hover:text-blue-600'>View variants</span>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            <CustomTableHead columns={columns} />
+            <ProductTableBody
+              products={products}
+              onDelete={(id) => console.log('delete', id)}
+              onAddVariant={(data) => modalOpen(data)}
+            />
           </Table>
         </div>
       </div>
