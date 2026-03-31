@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import FormModal from '@/components/FormModal';
 import { useVariantForm } from '@/customHooks/useVariantForm';
 import VariantForm from '@/components/admin/variant/VariantForm';
@@ -26,6 +26,8 @@ const columns = [
 
 function AdminProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   const { isLoading, products, error, totalPages, currentPage } = useSelector(
     (state) => state.products,
@@ -60,17 +62,16 @@ function AdminProducts() {
     setIsModalOpen(false);
   };
 
-  const onSubmit = (data) => {
-    dispatch(createVariant(data))
-      .unwrap()
-      .then(() => {
-        toast.success('Product created successfully');
-        closeModal();
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err || 'Something went wrong!');
-      });
+  const onSubmit = async (data) => {
+    try {
+      const res = await dispatch(createVariant(data)).unwrap();
+      toast.success('Variant created successfully');
+      closeModal();
+
+      navigate(`/admin/products/${res.productId}/variants`);
+    } catch (err) {
+      toast.error(err || 'Something went wrong!');
+    }
   };
 
   const modalOpen = (item = null) => {
@@ -87,9 +88,9 @@ function AdminProducts() {
   /* 
   todos
   --------
-  1. modify create submit handler with async
-  2. navigate to variants list page after succussfull variant creation
-  3. edit variant
+  1. modify create submit handler with async ✅
+  2. navigate to variants list page after succussfull variant creation ✅
+  3. edit variant 
   4. delete variant
   5. file upload on variant form
   */

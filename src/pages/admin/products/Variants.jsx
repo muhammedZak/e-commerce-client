@@ -9,12 +9,15 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchVariants } from '@/store/thunks/variantThunk';
 import { useEffect } from 'react';
 
+
+
 function Variants() {
+  const navigate = useNavigate();
   const { id } = useParams();
 
   const { isLoading, variants, error, totalPages, currentPage } = useSelector(
@@ -43,9 +46,11 @@ function Variants() {
     <div className='bg-white p-6 rounded-xl shadow-sm border'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold mb-6 text-gray-800'>Variants</h1>
-        <Button size='lg' className='mb-6 bg-blue-600 cursor-pointer'>
-          <Plus />
-          <span>Add Variant</span>
+        <Button
+          onClick={() => navigate(-1)}
+          variant='outline'
+          className='mb-6 p-5 text-xl hover:bg-gray-200  cursor-pointer'>
+          <span>Back</span>
         </Button>
       </div>
 
