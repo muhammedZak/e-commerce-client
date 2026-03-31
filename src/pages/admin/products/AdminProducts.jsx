@@ -5,14 +5,14 @@ import { Table } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import FormModal from '@/components/FormModal';
 import { useVariantForm } from '@/customHooks/useVariantForm';
 import VariantForm from '@/components/admin/variant/VariantForm';
 import CustomTableHead from '@/components/admin/CustomTableHead';
-import ProductTableBody from '@/components/admin/ProductTableBody';
 import { createVariant } from '@/store/thunks/variantThunk';
+import CustomTableBody from '@/components/admin/CustomTableBody';
 
 const columns = [
   { key: 'name', label: 'Product Name' },
@@ -21,8 +21,63 @@ const columns = [
   { key: 'sport', label: 'Sport' },
   { key: 'rating', label: 'Ratings' },
   { key: 'actions', label: 'Actions' },
-  { key: 'defualt', label: '' },
 ];
+
+const productColumns = [
+  { key: 'name' },
+
+  {
+    key: 'minPrice',
+    render: (item) => `₹${item.minPrice}`,
+  },
+
+  {
+    key: 'stock',
+    render: (item) => (
+      <span className={item.stock > 10 ? 'text-green-600' : 'text-red-500'}>
+        {item.stock > 0 ? item.stock : 'Out of stock'}
+      </span>
+    ),
+  },
+
+  {
+    key: 'sport',
+    render: (item) => item.sport?.name,
+    className: 'text-gray-700',
+  },
+
+  {
+    key: 'rating',
+    render: (item) => `⭐ ${item.rating}`,
+    className: 'text-yellow-500',
+  },
+];
+
+const productActions = (product) => (
+  <>
+    <Link to={`/admin/products/${product._id}/edit`}>
+      <Button variant='link'>
+        <Pencil />
+      </Button>
+    </Link>
+
+    <Button onClick={() => onDelete(product._id)} variant='link'>
+      <Trash2 />
+    </Button>
+
+    <Button
+      onClick={() => onAddVariant({ productId: product._id })}
+      variant='outline'
+      className='ml-2 hover:bg-blue-600 hover:text-white'>
+      <Plus />
+      <span>Add variant</span>
+    </Button>
+
+    <Link to={`/admin/products/${product._id}/variants`}>
+      <span className='ml-2 hover:text-blue-600'>View variants</span>
+    </Link>
+  </>
+);
 
 function AdminProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,10 +168,10 @@ function AdminProducts() {
         <div className='rounded-lg border overflow-hidden'>
           <Table>
             <CustomTableHead columns={columns} />
-            <ProductTableBody
-              products={products}
-              onDelete={(id) => console.log('delete', id)}
-              onAddVariant={(data) => modalOpen(data)}
+            <CustomTableBody
+              data={products}
+              columns={productColumns}
+              actions={productActions}
             />
           </Table>
         </div>

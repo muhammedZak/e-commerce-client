@@ -13,8 +13,45 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchVariants } from '@/store/thunks/variantThunk';
 import { useEffect } from 'react';
+import CustomTableHead from '@/components/admin/CustomTableHead';
+import CustomTableBody from '@/components/admin/CustomTableBody';
 
+const columns = [
+  { key: 'name', label: 'Product Name' },
+  { key: 'color', label: 'Color' },
+  { key: 'size', label: 'Size' },
+  { key: 'price', label: 'Price' },
+  { key: 'stock', label: 'Stock' },
+  { key: 'actions', label: 'Actions' },
+];
 
+const variantColumns = [
+  { key: 'name' },
+  { key: 'color' },
+  { key: 'size' },
+  { key: 'price' },
+
+  {
+    key: 'stock',
+    render: (item) => (
+      <span className={item.stock > 10 ? 'text-green-600' : 'text-red-500'}>
+        {item.stock > 0 ? item.stock : 'Out of stock'}
+      </span>
+    ),
+  },
+];
+
+const variantActions = (variant) => (
+  <>
+    <Button variant='link'>
+      <Pencil />
+    </Button>
+
+    <Button variant='link' className='ml-2'>
+      <Trash2 />
+    </Button>
+  </>
+);
 
 function Variants() {
   const navigate = useNavigate();
@@ -56,30 +93,13 @@ function Variants() {
 
       <div className='rounded-lg border overflow-hidden'>
         <Table className='w-full'>
-          <TableHeader className='bg-gray-100'>
-            <TableRow>
-              <TableHead className='font-semibold text-gray-700'>
-                Product Name
-              </TableHead>
-              <TableHead className='font-semibold text-gray-700'>
-                Color
-              </TableHead>
-              <TableHead className='font-semibold text-gray-700'>
-                Size
-              </TableHead>
-              <TableHead className='font-semibold text-gray-700'>
-                Price
-              </TableHead>
-              <TableHead className='font-semibold text-gray-700'>
-                Stock
-              </TableHead>
-
-              <TableHead className='font-semibold text-gray-700'>
-                Action
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <CustomTableHead columns={columns} />
+          <CustomTableBody
+            data={variants}
+            columns={variantColumns}
+            actions={variantActions}
+          />
+          {/* <TableBody>
             {variants.map((variant) => (
               <TableRow
                 key={variant._id}
@@ -113,7 +133,7 @@ function Variants() {
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
+          </TableBody> */}
         </Table>
       </div>
     </div>
