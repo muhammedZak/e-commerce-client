@@ -1,12 +1,16 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchVariants, fetchSingleProducts } from '../thunks/variantThunk.js';
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import {
+  fetchVariants,
+  fetchSingleProducts,
+  createVariant,
+} from '../thunks/variantThunk.js';
 
 const initialState = {
   variants: [],
   count: null,
   totalPages: null,
   currentPage: null,
-  product: null,
+  // product: null,
   isLoading: false,
   error: null,
 };
@@ -21,9 +25,6 @@ const variantSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchVariants.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(fetchVariants.fulfilled, (state, action) => {
         state.isLoading = false;
         state.variants = action.payload.data;
@@ -31,9 +32,8 @@ const variantSlice = createSlice({
         state.currentPage = action.payload.currentPage;
         state.totalPages = action.payload.totalPages;
       })
-      .addCase(fetchVariants.rejected, (state, action) => {
+      .addCase(createVariant.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message;
       })
       .addCase(fetchSingleProducts.pending, (state) => {
         state.isLoading = true;
@@ -45,7 +45,21 @@ const variantSlice = createSlice({
       .addCase(fetchSingleProducts.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
-      });
+      })
+      .addMatcher(
+        isAnyOf(fetchVariants.pending, createVariant.pending),
+        (state) => {
+          state.isLoading = true;
+          state.error = null;
+        },
+      )
+      .addMatcher(
+        isAnyOf(fetchVariants.rejected, createVariant.rejected),
+        (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      );
   },
 });
 

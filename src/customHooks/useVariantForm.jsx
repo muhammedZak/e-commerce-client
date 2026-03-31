@@ -11,9 +11,7 @@ const variantSchema = z.object({
 
   size: z.string().optional(),
 
-  price: z.coerce
-    .number() 
-    .min(0, 'Price must be greater than or equal to 0'),
+  price: z.coerce.number().min(0, 'Price must be greater than or equal to 0'),
 
   stock: z.coerce.number().min(0, 'Stock cannot be negative').default(0),
 

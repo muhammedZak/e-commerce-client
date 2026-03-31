@@ -1,24 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProducts } from '../../../store/thunks/fetchProducts';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import FormModal from '@/components/FormModal';
 import { useVariantForm } from '@/customHooks/useVariantForm';
 import VariantForm from '@/components/admin/variant/VariantForm';
 import CustomTableHead from '@/components/admin/CustomTableHead';
 import ProductTableBody from '@/components/admin/ProductTableBody';
+import { createVariant } from '@/store/thunks/variantThunk';
 
 const columns = [
   { key: 'name', label: 'Product Name' },
@@ -45,9 +39,9 @@ function AdminProducts() {
 
   const { form, resetForm } = useVariantForm();
 
-  const handlePageChange = (page) => {
-    dispatch(productsActions.setPage(page));
-  };
+  // const handlePageChange = (page) => {
+  //   dispatch(productsActions.setPage(page));
+  // };
 
   if (isLoading) {
     return (
@@ -61,8 +55,22 @@ function AdminProducts() {
     return <div>Error....</div>;
   }
 
+  const closeModal = () => {
+    resetForm();
+    setIsModalOpen(false);
+  };
+
   const onSubmit = (data) => {
-    
+    dispatch(createVariant(data))
+      .unwrap()
+      .then(() => {
+        toast.success('Product created successfully');
+        closeModal();
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err || 'Something went wrong!');
+      });
   };
 
   const modalOpen = (item = null) => {
@@ -72,14 +80,19 @@ function AdminProducts() {
     }
   };
 
-  const closeModal = () => {
-    resetForm();
-    setIsModalOpen(false);
-  };
-
   const handleModalChange = (val) => {
     if (!val) closeModal();
   };
+
+  /* 
+  todos
+  --------
+  1. modify create submit handler with async
+  2. navigate to variants list page after succussfull variant creation
+  3. edit variant
+  4. delete variant
+  5. file upload on variant form
+  */
 
   return (
     <>

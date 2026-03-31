@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 
 function Variants() {
   const { id } = useParams();
+
   const { isLoading, variants, error, totalPages, currentPage } = useSelector(
     (state) => state.variants,
   );
