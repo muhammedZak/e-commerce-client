@@ -53,31 +53,33 @@ const productColumns = [
   },
 ];
 
-const productActions = (product) => (
-  <>
-    <Link to={`/admin/products/${product._id}/edit`}>
-      <Button variant='link'>
-        <Pencil />
+const getProductActions = ({ onDelete, onAddVariant }) => {
+  return (product) => (
+    <>
+      <Link to={`/admin/products/${product._id}/edit`}>
+        <Button variant='link'>
+          <Pencil />
+        </Button>
+      </Link>
+
+      <Button onClick={() => onDelete(product._id)} variant='link'>
+        <Trash2 />
       </Button>
-    </Link>
 
-    <Button onClick={() => onDelete(product._id)} variant='link'>
-      <Trash2 />
-    </Button>
+      <Button
+        onClick={() => onAddVariant({ productId: product._id })}
+        variant='outline'
+        className='ml-2 hover:bg-blue-600 hover:text-white'>
+        <Plus />
+        <span>Add variant</span>
+      </Button>
 
-    <Button
-      onClick={() => onAddVariant({ productId: product._id })}
-      variant='outline'
-      className='ml-2 hover:bg-blue-600 hover:text-white'>
-      <Plus />
-      <span>Add variant</span>
-    </Button>
-
-    <Link to={`/admin/products/${product._id}/variants`}>
-      <span className='ml-2 hover:text-blue-600'>View variants</span>
-    </Link>
-  </>
-);
+      <Link to={`/admin/products/${product._id}/variants`}>
+        <span className='ml-2 hover:text-blue-600'>View variants</span>
+      </Link>
+    </>
+  );
+};
 
 function AdminProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -129,26 +131,20 @@ function AdminProducts() {
     }
   };
 
-  const modalOpen = (item = null) => {
+  function onAddVariant(item) {
     setIsModalOpen(true);
-    if (item) {
-      resetForm(item);
-    }
-  };
+    if (item) resetForm(item);
+  }
+
+  function onDelete(id) {
+    console.log('delete', id);
+  }
+
+  const actions = getProductActions({ onDelete, onAddVariant });
 
   const handleModalChange = (val) => {
     if (!val) closeModal();
   };
-
-  /* 
-  todos
-  --------
-  1. modify create submit handler with async ✅
-  2. navigate to variants list page after succussfull variant creation ✅
-  3. edit variant 
-  4. delete variant
-  5. file upload on variant form
-  */
 
   return (
     <>
@@ -171,7 +167,7 @@ function AdminProducts() {
             <CustomTableBody
               data={products}
               columns={productColumns}
-              actions={productActions}
+              actions={actions}
             />
           </Table>
         </div>

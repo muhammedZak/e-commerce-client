@@ -3,6 +3,8 @@ import {
   fetchVariants,
   fetchSingleProducts,
   createVariant,
+  updateVariant,
+  deleteVariant,
 } from '../thunks/variantThunk.js';
 
 const initialState = {
@@ -35,6 +37,19 @@ const variantSlice = createSlice({
       .addCase(createVariant.fulfilled, (state, action) => {
         state.isLoading = false;
       })
+      .addCase(updateVariant.fulfilled, (state, action) => {
+        const index = state.variants.findIndex(
+          (v) => v._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.variants[index] = action.payload;
+        }
+        state.isLoading = false;
+      })
+      .addCase(deleteVariant.fulfilled, (state, action) => {
+        state.variants = state.variants.filter((v) => v._id !== action.payload);
+        state.isLoading = false;
+      })
       .addCase(fetchSingleProducts.pending, (state) => {
         state.isLoading = true;
       })
@@ -47,14 +62,24 @@ const variantSlice = createSlice({
         state.error = action.error.message;
       })
       .addMatcher(
-        isAnyOf(fetchVariants.pending, createVariant.pending),
+        isAnyOf(
+          fetchVariants.pending,
+          createVariant.pending,
+          updateVariant.pending,
+          deleteVariant.pending,
+        ),
         (state) => {
           state.isLoading = true;
           state.error = null;
         },
       )
       .addMatcher(
-        isAnyOf(fetchVariants.rejected, createVariant.rejected),
+        isAnyOf(
+          fetchVariants.rejected,
+          createVariant.rejected,
+          updateVariant.rejected,
+          deleteVariant.rejected,
+        ),
         (state, action) => {
           state.isLoading = false;
           state.error = action.payload;

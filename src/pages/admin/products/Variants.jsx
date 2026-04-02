@@ -1,20 +1,27 @@
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchVariants } from '@/store/thunks/variantThunk';
-import { useEffect } from 'react';
+
+import {
+  deleteVariant,
+  fetchVariants,
+  updateVariant,
+} from '@/store/thunks/variantThunk';
+
+import { useVariantForm } from '@/customHooks/useVariantForm';
+
+import VariantForm from '@/components/admin/variant/VariantForm';
+import FormModal from '@/components/FormModal';
 import CustomTableHead from '@/components/admin/CustomTableHead';
 import CustomTableBody from '@/components/admin/CustomTableBody';
+
+import { Table } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+
+import { Pencil, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import AlertModal from '@/components/admin/AlertModal';
 
 const columns = [
   { key: 'name', label: 'Product Name' },
@@ -41,19 +48,31 @@ const variantColumns = [
   },
 ];
 
-const variantActions = (variant) => (
-  <>
-    <Button variant='link'>
-      <Pencil />
-    </Button>
+const getVariantActions = ({ openAlert, onEdit }) => {
+  return (variant) => (
+    <>
+      <Button
+        className='cursor-pointer'
+        variant='link'
+        onClick={() => onEdit(variant)}>
+        <Pencil />
+      </Button>
 
-    <Button variant='link' className='ml-2'>
-      <Trash2 />
-    </Button>
-  </>
-);
+      <Button
+        variant='link'
+        className='ml-2 cursor-pointer'
+        onClick={() => openAlert(variant._id)}>
+        <Trash2 />
+      </Button>
+    </>
+  );
+};
 
 function Variants() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [variantId, setVariantId] = useState(null);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -67,76 +86,106 @@ function Variants() {
     dispatch(fetchVariants(id));
   }, [dispatch, id]);
 
-  const handlePageChange = (page) => {
-    dispatch(variantsActions.setPage(page));
+  const loadingContent = (
+    <div className='h-screen flex items-center justify-center'>
+      <Spinner className='size-16' />
+    </div>
+  );
+
+  const errorMessage = <div>Error....</div>;
+
+  const { form, resetForm } = useVariantForm();
+
+  function onEdit(item) {
+    setVariantId(item._id);
+    setIsOpen(true);
+    resetForm({
+      ...item,
+      productId: item.productId._id,
+    });
+  }
+
+  const onDelete = async () => {
+    try {
+      await dispatch(deleteVariant(variantId)).unwrap();
+      toast.success('Variant deleted successfully');
+      setVariantId(null);
+    } catch (err) {
+      toast.error(err || 'Something went wrong!');
+    }
   };
 
-  if (isLoading) {
-    return <div>Loading....</div>;
-  }
+  const openAlert = (id) => {
+    setIsAlertOpen(true);
+    setVariantId(id);
+  };
 
-  if (error) {
-    return <div>Error....</div>;
-  }
+  const actions = getVariantActions({ onEdit, openAlert });
+
+  const closeModal = () => {
+    resetForm();
+    setVariantId(null);
+    setIsOpen(false);
+  };
+
+  const handleModalChange = (val) => {
+    if (!val) closeModal();
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      await dispatch(updateVariant({ id: variantId, data })).unwrap();
+      toast.success('Variant updated successfully');
+      closeModal();
+    } catch (err) {
+      toast.error(err || 'Something went wrong!');
+    }
+  };
+
+  const onAlertChange = (open) => {
+    setIsAlertOpen(open);
+    if (!open) setVariantId(null);
+  };
 
   return (
-    <div className='bg-white p-6 rounded-xl shadow-sm border'>
-      <div className='flex items-center justify-between'>
-        <h1 className='text-2xl font-bold mb-6 text-gray-800'>Variants</h1>
-        <Button
-          onClick={() => navigate(-1)}
-          variant='outline'
-          className='mb-6 p-5 text-xl hover:bg-gray-200  cursor-pointer'>
-          <span>Back</span>
-        </Button>
-      </div>
+    <>
+      <FormModal open={isOpen} onOpenChange={handleModalChange}>
+        <VariantForm form={form} onSubmit={onSubmit} />
+      </FormModal>
+      <AlertModal
+        open={isAlertOpen}
+        onOpenChange={onAlertChange}
+        onSubmit={onDelete}
+      />
+      <div className='bg-white p-6 rounded-xl shadow-sm border'>
+        <div className='flex items-center justify-between'>
+          <h1 className='text-2xl font-bold mb-6 text-gray-800'>Variants</h1>
+          <Button
+            onClick={() => navigate(-1)}
+            variant='outline'
+            className='mb-6 p-5 text-xl hover:bg-gray-200  cursor-pointer'>
+            <span>Back</span>
+          </Button>
+        </div>
 
-      <div className='rounded-lg border overflow-hidden'>
-        <Table className='w-full'>
-          <CustomTableHead columns={columns} />
-          <CustomTableBody
-            data={variants}
-            columns={variantColumns}
-            actions={variantActions}
-          />
-          {/* <TableBody>
-            {variants.map((variant) => (
-              <TableRow
-                key={variant._id}
-                className='hover:bg-gray-50 w-full transition-colors [&>td]:hover:bg-transparent'>
-                <TableCell className='font-medium text-gray-800'>
-                  {variant.name}
-                </TableCell>
-                <TableCell className='font-medium text-gray-800'>
-                  {variant.color}
-                </TableCell>
-                <TableCell className='font-medium text-gray-800'>
-                  {variant.size}
-                </TableCell>
-                <TableCell className='font-medium text-gray-800'>
-                  {variant.price}
-                </TableCell>
-                <TableCell
-                  className={`font-medium  ${
-                    variant.stock > 10 ? 'text-green-600' : 'text-red-500'
-                  }`}>
-                  {variant.stock ? variant.stock : 'Out of stock'}
-                </TableCell>
-
-                <TableCell>
-                  <Button variant='link' className='cursor-pointer'>
-                    <Pencil />
-                  </Button>
-                  <Button className='ml-2 cursor-pointer' variant='link'>
-                    <Trash2 />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody> */}
-        </Table>
+        <div className='rounded-lg border overflow-hidden'>
+          {isLoading ? (
+            loadingContent
+          ) : error ? (
+            errorMessage
+          ) : (
+            <Table className='w-full'>
+              <CustomTableHead columns={columns} />
+              <CustomTableBody
+                data={variants}
+                columns={variantColumns}
+                actions={actions}
+              />
+            </Table>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

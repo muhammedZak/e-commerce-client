@@ -30,6 +30,43 @@ export const createVariant = createAsyncThunk(
   },
 );
 
+export const updateVariant = createAsyncThunk(
+  'variants/updateVariant',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:5000/api/v1/variants/${id}`,
+        data,
+        { withCredentials: true },
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
+    }
+  },
+);
+
+export const deleteVariant = createAsyncThunk(
+  'variants/deleteVariant',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/v1/variants/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error?.message || error.message,
+      );
+    }
+  },
+);
+
 export const fetchSingleProducts = createAsyncThunk(
   'products/fetchSingleProducts',
   async (id) => {
