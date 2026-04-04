@@ -17,7 +17,7 @@ const variantSchema = z.object({
 
   isAvailable: z.boolean().default(true),
 
-  images: z.array(z.string().url('Invalid image URL')).optional().default([]),
+  images: z.array(z.instanceof(File)).optional().default([]),
 });
 
 function useVariantForm() {

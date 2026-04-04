@@ -7,7 +7,7 @@ function Card({ product }) {
       <div className='bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition'>
         <Link to={`/products/${product._id}`}>
           <img
-            src='https://images.unsplash.com/photo-1710609845812-9546e39dba46?w=600&auto=format&fit=crop&q=60'
+            src={`http://localhost:5000/${product.thumbNailImage}`}
             alt='Product'
             className='w-full h-56 object-cover'
           />

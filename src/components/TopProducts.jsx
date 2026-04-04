@@ -9,8 +9,6 @@ function TopProducts() {
   const dispatch = useDispatch();
 
   const { isLoading, products, error } = useSelector((state) => state.products);
-  // const isLoading = useSelector((state) => state.products.isLoading);
-  // const error = useSelector((state) => state.products.error);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -23,7 +21,7 @@ function TopProducts() {
   if (error) {
     return <p>Error: {error}</p>;
   }
-
+  console.log(products);
   return (
     <section className='mt-16'>
       <Container>

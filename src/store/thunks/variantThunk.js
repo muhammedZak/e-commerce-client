@@ -19,7 +19,12 @@ export const createVariant = createAsyncThunk(
       const response = await axios.post(
         `http://localhost:5000/api/v1/variants/${data.productId}/variants`,
         data,
-        { withCredentials: true },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data', // ✅ REQUIRED
+          },
+        },
       );
       return response.data.data;
     } catch (error) {
@@ -33,11 +38,18 @@ export const createVariant = createAsyncThunk(
 export const updateVariant = createAsyncThunk(
   'variants/updateVariant',
   async ({ id, data }, { rejectWithValue }) => {
+    console.log(data);
+    console.log(id);
     try {
       const response = await axios.patch(
         `http://localhost:5000/api/v1/variants/${id}`,
         data,
-        { withCredentials: true },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data', // ✅ REQUIRED
+          },
+        },
       );
       return response.data.data;
     } catch (error) {

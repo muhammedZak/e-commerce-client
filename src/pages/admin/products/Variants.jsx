@@ -22,6 +22,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import AlertModal from '@/components/admin/AlertModal';
+import { da } from 'zod/locales';
 
 const columns = [
   { key: 'name', label: 'Product Name' },
@@ -102,6 +103,7 @@ function Variants() {
     resetForm({
       ...item,
       productId: item.productId._id,
+      images: [],
     });
   }
 
@@ -134,7 +136,21 @@ function Variants() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(updateVariant({ id: variantId, data })).unwrap();
+      const formData = new FormData();
+
+      formData.append('name', data.name);
+      formData.append('price', data.price);
+      formData.append('productId', data.productId);
+      formData.append('color', data.color || '');
+      formData.append('size', data.size || '');
+      formData.append('stock', data.stock || 0);
+      formData.append('isAvailable', data.isAvailable);
+
+      data.images?.forEach((file) => {
+        formData.append('images', file);
+      });
+
+      await dispatch(updateVariant({ id: variantId, data: formData })).unwrap();
       toast.success('Variant updated successfully');
       closeModal();
     } catch (err) {
@@ -150,7 +166,7 @@ function Variants() {
   return (
     <>
       <FormModal open={isOpen} onOpenChange={handleModalChange}>
-        <VariantForm form={form} onSubmit={onSubmit} />
+        <VariantForm form={form} onSubmit={onSubmit} title='Edit' />
       </FormModal>
       <AlertModal
         open={isAlertOpen}

@@ -1,7 +1,7 @@
 import FormField from '@/components/form/FormField';
 
 import { Input } from '@/components/ui/input';
-import { FieldGroup } from '@/components/ui/field';
+import { FieldDescription, FieldGroup } from '@/components/ui/field';
 import {
   DialogDescription,
   DialogHeader,
@@ -100,16 +100,19 @@ const VariantForm = ({ form, onSubmit, title = 'Add' }) => {
           </FormField>
           <FormField name='images' control={form.control} label='Images'>
             {(field, state) => (
-              <Input
-                value={field.value?.join(',') || ''}
-                onChange={(e) =>
-                  field.onChange(
-                    e.target.value.split(',').map((url) => url.trim()),
-                  )
-                }
-                aria-invalid={state.invalid}
-                placeholder='Enter image URLs separated by comma'
-              />
+              <>
+                <Input
+                  id={field.name}
+                  type='file'
+                  multiple
+                  aria-invalid={state.invalid}
+                  onChange={(e) => {
+                    const newFiles = Array.from(e.target.files || []);
+                    field.onChange([...(field.value || []), ...newFiles]);
+                  }}
+                />
+                <FieldDescription>Select a picture to upload.</FieldDescription>
+              </>
             )}
           </FormField>
           <FormField
@@ -127,7 +130,7 @@ const VariantForm = ({ form, onSubmit, title = 'Add' }) => {
         </FieldGroup>
         <DialogFooter>
           <Button type='submit' className='cursor-pointer'>
-            Create
+            {title === 'Add' ? 'Create' : 'Update'}
           </Button>
         </DialogFooter>
       </form>
