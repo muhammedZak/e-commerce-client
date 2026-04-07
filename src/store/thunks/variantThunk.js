@@ -21,9 +21,6 @@ export const createVariant = createAsyncThunk(
         data,
         {
           withCredentials: true,
-          headers: {
-            'Content-Type': 'multipart/form-data', // ✅ REQUIRED
-          },
         },
       );
       return response.data.data;
@@ -46,9 +43,6 @@ export const updateVariant = createAsyncThunk(
         data,
         {
           withCredentials: true,
-          headers: {
-            'Content-Type': 'multipart/form-data', // ✅ REQUIRED
-          },
         },
       );
       return response.data.data;

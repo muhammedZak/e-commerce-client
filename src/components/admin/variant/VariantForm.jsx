@@ -120,10 +120,12 @@ const VariantForm = ({ form, onSubmit, title = 'Add' }) => {
             control={form.control}
             label='Available'>
             {(field) => (
-              <input
+              <Input
                 type='checkbox'
                 checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
+                onChange={(e) => {
+                  field.onChange(e.target.checked);
+                }}
               />
             )}
           </FormField>

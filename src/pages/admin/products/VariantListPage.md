@@ -7,8 +7,11 @@ todos
 2. navigate to variants list page after succussfull variant creation ✅
 3. edit variant ✅
 4. delete variant ✅
-5. file upload on variant form 
+5. file upload on variant form ✅
    \*/
 
 
+edit products 
+delete products
+fix table scrollingX
 

@@ -10,12 +10,21 @@ import {
   SelectValue,
 } from '../ui/select';
 
-function SelectField({ name, control, label, options, placeholder, disable }) {
+function SelectField({
+  name,
+  control,
+  label,
+  options,
+  placeholder,
+  disable,
+  id,
+  mode,
+}) {
   return (
     <FormField name={name} control={control} label={label}>
       {(field, state) => (
         <Select
-          value={field.value || ''}
+          value={(mode ? (field.value = id) : field.value) || ''}
           onValueChange={field.onChange}
           disabled={disable}>
           <SelectTrigger
