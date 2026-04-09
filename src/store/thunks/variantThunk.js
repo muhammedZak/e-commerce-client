@@ -35,8 +35,6 @@ export const createVariant = createAsyncThunk(
 export const updateVariant = createAsyncThunk(
   'variants/updateVariant',
   async ({ id, data }, { rejectWithValue }) => {
-    console.log(data);
-    console.log(id);
     try {
       const response = await axios.patch(
         `http://localhost:5000/api/v1/variants/${id}`,

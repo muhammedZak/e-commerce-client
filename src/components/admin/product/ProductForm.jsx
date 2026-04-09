@@ -6,8 +6,12 @@ import { FieldDescription, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useProductForm } from '@/customHooks/useProductForm';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { Button } from '@/components/ui/button';
+import { createProduct, updateProduct } from '@/store/thunks/fetchProducts';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 function ProductForm({
   isEdit,
@@ -16,7 +20,9 @@ function ProductForm({
   categories,
   subcategories,
 }) {
-  const form = useProductForm(isEdit);
+  const id = isEdit;
+  const navigate = useNavigate();
+  const form = useProductForm(Boolean(isEdit));
 
   useEffect(() => {
     if (initialValues) {
@@ -57,19 +63,30 @@ function ProductForm({
 
   const dispatch = useDispatch();
 
-  const onSubmit = (data) => {
-    const formData = new FormData();
+  const handleSuccess = (messsage) => {
+    toast.success(messsage);
+    form.reset();
+    navigate(-1);
+  };
 
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
 
-    dispatch(createProduct(formData))
-      .unwrap()
-      .then(() => {
-        toast.success(isEdit ? 'Updated' : 'Created');
-        form.reset();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
       });
+
+      if (isEdit) {
+        await dispatch(updateProduct({ id, data: formData })).unwrap();
+        handleSuccess('Product updated succussfully👍');
+      } else {
+        await dispatch(createProduct(formData)).unwrap();
+        handleSuccess('Product created succussfully👍');
+      }
+    } catch (err) {
+      toast.error(err || 'Something went wrong!🤦‍♂️');
+    }
   };
 
   return (
@@ -179,6 +196,23 @@ function ProductForm({
           />
         </FieldGroup>
       </FormCard>
+      <div>
+        <Button
+          type='submit'
+          form='product-create-form'
+          size='lg'
+          className='mb-6 mr-5 px-5 bg-blue-600 cursor-pointer'>
+          <span>{isEdit ? 'Update' : 'Submit'}</span>
+        </Button>
+        <Button
+          type='button'
+          size='lg'
+          variant='outline'
+          className='mb-6 px-5 cursor-pointer'
+          onClick={() => form.reset()}>
+          Cancel
+        </Button>
+      </div>
     </form>
   );
 }

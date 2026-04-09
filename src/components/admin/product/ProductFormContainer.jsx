@@ -5,9 +5,8 @@ import { fetchSingleProducts } from '@/store/thunks/fetchProducts';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useProductForm } from '@/customHooks/useProductForm';
 
-function ProductFormContainer({ onFormReady }) {
+function ProductFormContainer() {
   const { id } = useParams();
   const isEdit = Boolean(id);
 
@@ -23,16 +22,6 @@ function ProductFormContainer({ onFormReady }) {
       dispatch(fetchSingleProducts(id));
     }
   }, [id]);
-
-  const form = useProductForm();
-  const { reset } = form;
-
-  useEffect(() => {
-    onFormReady?.({
-      resetForm: () => reset(),
-      isEdit,
-    });
-  }, [isEdit]);
 
   if (isLoading) return <LoaderOverlay />;
 
@@ -53,7 +42,7 @@ function ProductFormContainer({ onFormReady }) {
 
   return (
     <ProductForm
-      isEdit={isEdit}
+      isEdit={id}
       initialValues={initialValues}
       sports={sports}
       categories={categories}

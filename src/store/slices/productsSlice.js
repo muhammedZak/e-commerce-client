@@ -1,8 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import {
   fetchProducts,
   fetchSingleProducts,
   createProduct,
+  updateProduct,
+  deleteProduct,
 } from '../thunks/fetchProducts.js';
 
 const initialState = {
@@ -25,9 +27,6 @@ const productsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.products = action.payload.data;
@@ -35,33 +34,55 @@ const productsSlice = createSlice({
         state.currentPage = action.payload.currentPage;
         state.totalPages = action.payload.totalPages;
       })
-      .addCase(fetchProducts.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.error.message;
-      })
-      .addCase(fetchSingleProducts.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(fetchSingleProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.product = action.payload.data;
       })
-      .addCase(fetchSingleProducts.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.error.message;
-      })
-      .addCase(createProduct.pending, (state, action) => {
-        state.isLoading = true;
-        state.error = null;
-      })
       .addCase(createProduct.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.product = action.payload.data;
+        state.product = action.payload;
       })
-      .addCase(createProduct.rejected, (state, action) => {
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        const index = state.products.findIndex(
+          (p) => p._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.products[index] = action.payload;
+        }
         state.isLoading = false;
-        state.error = action.error.message;
-      });
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.products = state.products.filter(
+          (product) => product._id !== action.payload.id,
+        );
+        state.isLoading = false;
+      })
+      .addMatcher(
+        isAnyOf(
+          fetchProducts.pending,
+          createProduct.pending,
+          fetchSingleProducts.pending,
+          updateProduct.pending,
+          deleteProduct.pending,
+        ),
+        (state) => {
+          state.isLoading = true;
+          state.error = null;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          fetchProducts.rejected,
+          createProduct.rejected,
+          fetchSingleProducts.rejected,
+          updateProduct.rejected,
+          deleteProduct.rejected,
+        ),
+        (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      );
   },
 });
 

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchProducts } from '../../../store/thunks/fetchProducts';
+import {
+  deleteProduct,
+  fetchProducts,
+} from '../../../store/thunks/fetchProducts';
 import { Table } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -13,6 +16,7 @@ import VariantForm from '@/components/admin/variant/VariantForm';
 import CustomTableHead from '@/components/admin/CustomTableHead';
 import { createVariant } from '@/store/thunks/variantThunk';
 import CustomTableBody from '@/components/admin/CustomTableBody';
+import AlertModal from '@/components/admin/AlertModal';
 
 const columns = [
   { key: 'name', label: 'Product Name' },
@@ -53,7 +57,7 @@ const productColumns = [
   },
 ];
 
-const getProductActions = ({ onDelete, onAddVariant }) => {
+const getProductActions = ({ openAlert, onAddVariant }) => {
   return (product) => (
     <>
       <Link to={`/admin/products/${product._id}/edit`}>
@@ -62,7 +66,7 @@ const getProductActions = ({ onDelete, onAddVariant }) => {
         </Button>
       </Link>
 
-      <Button onClick={() => onDelete(product._id)} variant='link'>
+      <Button onClick={() => openAlert(product._id)} variant='link'>
         <Trash2 />
       </Button>
 
@@ -83,6 +87,8 @@ const getProductActions = ({ onDelete, onAddVariant }) => {
 
 function AdminProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [productId, setProductId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -97,10 +103,6 @@ function AdminProducts() {
   }, [currentPage, dispatch]);
 
   const { form, resetForm } = useVariantForm();
-
-  // const handlePageChange = (page) => {
-  //   dispatch(productsActions.setPage(page));
-  // };
 
   if (isLoading) {
     return (
@@ -148,14 +150,30 @@ function AdminProducts() {
     if (item) resetForm(item);
   }
 
-  function onDelete(id) {
-    console.log('delete', id);
-  }
+  const onDelete = async () => {
+    try {
+      await dispatch(deleteProduct(productId)).unwrap();
+      toast.success('Product deleted successfully✅');
+      setIsAlertOpen(false);
+    } catch (err) {
+      toast.error(err || 'Something went wrong!🤦‍♂️');
+    }
+  };
 
-  const actions = getProductActions({ onDelete, onAddVariant });
+  const openAlert = (id) => {
+    setProductId(id);
+    setIsAlertOpen(true);
+  };
+
+  const actions = getProductActions({ openAlert, onAddVariant });
 
   const handleModalChange = (val) => {
     if (!val) closeModal();
+  };
+
+  const onAlertChange = (open) => {
+    setIsAlertOpen(open);
+    setProductId(null);
   };
 
   return (
@@ -163,6 +181,11 @@ function AdminProducts() {
       <FormModal open={isModalOpen} onOpenChange={handleModalChange}>
         <VariantForm form={form} onSubmit={onSubmit} />
       </FormModal>
+      <AlertModal
+        open={isAlertOpen}
+        onOpenChange={onAlertChange}
+        onSubmit={onDelete}
+      />
       <div className='bg-white p-6 rounded-xl shadow-sm border'>
         <div className='flex items-center justify-between'>
           <h1 className='text-2xl font-bold mb-6 text-gray-800'>Products</h1>

@@ -47,19 +47,9 @@ const variantSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(deleteVariant.fulfilled, (state, action) => {
+        console.log(action.payload);
         state.variants = state.variants.filter((v) => v._id !== action.payload);
         state.isLoading = false;
-      })
-      .addCase(fetchSingleProducts.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(fetchSingleProducts.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.product = action.payload.data;
-      })
-      .addCase(fetchSingleProducts.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.error.message;
       })
       .addMatcher(
         isAnyOf(
