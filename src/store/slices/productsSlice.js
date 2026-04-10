@@ -24,6 +24,9 @@ const productsSlice = createSlice({
     setPage(state, action) {
       state.currentPage = action.payload;
     },
+    clearError(state) {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder

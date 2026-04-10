@@ -17,6 +17,7 @@ import CustomTableHead from '@/components/admin/CustomTableHead';
 import { createVariant } from '@/store/thunks/variantThunk';
 import CustomTableBody from '@/components/admin/CustomTableBody';
 import AlertModal from '@/components/admin/AlertModal';
+import { productsActions } from '@/store/slices/productsSlice';
 
 const columns = [
   { key: 'name', label: 'Product Name' },
@@ -102,6 +103,13 @@ function AdminProducts() {
     dispatch(fetchProducts(currentPage));
   }, [currentPage, dispatch]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error || 'Failed to fetch products');
+      dispatch(productsActions.clearError());
+    }
+  }, [error, dispatch]);
+
   const { form, resetForm } = useVariantForm();
 
   if (isLoading) {
@@ -110,10 +118,6 @@ function AdminProducts() {
         <Spinner className='size-16' />
       </div>
     );
-  }
-
-  if (error) {
-    return <div>Error....</div>;
   }
 
   const closeModal = () => {

@@ -47,7 +47,6 @@ const variantSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(deleteVariant.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.variants = state.variants.filter((v) => v._id !== action.payload);
         state.isLoading = false;
       })
