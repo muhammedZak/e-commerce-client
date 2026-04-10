@@ -132,8 +132,10 @@ function AdminProducts() {
       formData.append('name', data.name);
       formData.append('price', data.price);
       formData.append('productId', data.productId);
+      formData.append('stock', data.stock || 0);
       formData.append('color', data.color || '');
       formData.append('size', data.size || '');
+      formData.append('isAvailable', data.isAvailable);
 
       data.images.forEach((file) => {
         formData.append('images', file);

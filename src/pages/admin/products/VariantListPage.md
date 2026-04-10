@@ -10,8 +10,6 @@ todos
 5. file upload on variant form ✅
    \*/
 
-
-edit products 
-delete products
+edit products ✅
+delete products ✅
 fix table scrollingX
-
